@@ -6,12 +6,12 @@ import {
   Utensils,
   Dumbbell,
   TrendingUp,
-  GitCompare,
   BookOpen,
   LogOut,
   Menu,
   X,
   Flame,
+  BotMessageSquare
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -22,19 +22,15 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 
 const navItems = [
-  { icon: LayoutDashboard, label: "Dashboard", path: "/" },
+  { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
   { icon: Utensils, label: "Meal Plans", path: "/meal-plans" },
   { icon: Dumbbell, label: "Workouts", path: "/workouts" },
   { icon: TrendingUp, label: "Progress", path: "/progress" },
-  // { icon: GitCompare, label: "Compare", path: "/compare" },
   { icon: BookOpen, label: "Saved Plans", path: "/saved-plans" },
+  { icon: BotMessageSquare, label: "Chat Bot", path: "/chat-bot" },
 ];
 
-interface LayoutProps {
-  children: React.ReactNode;
-}
-
-export const Layout = ({ children }: LayoutProps) => {
+const Sidebar = () => {
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -43,16 +39,16 @@ export const Layout = ({ children }: LayoutProps) => {
     pathname === path || pathname.startsWith(path + "/");
 
   return (
-    <div className="min-h-screen flex w-full bg-background">
+    <>
       {/* ================= Desktop Sidebar ================= */}
       <aside className="hidden lg:flex w-64 flex-col glass-card border-r border-border/50 fixed h-screen z-40">
         {/* Logo */}
         <div className="p-6 border-b border-border/50">
           <Link href="/dashboard" className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-lime-500 to-lime-600 flex items-center justify-center shadow-glow">
+            <div className="w-10 h-10 rounded-xl bg-linear-to-br from-lime-500 to-lime-600 flex items-center justify-center shadow-glow">
               <Flame className="w-6 h-6 text-primary-foreground" />
             </div>
-            <span className="text-xl font-bold text-gradient-primary">
+            <span className="text-xl font-bold text-linear-primary">
               FitForge
             </span>
           </Link>
@@ -71,11 +67,10 @@ export const Layout = ({ children }: LayoutProps) => {
                   className={cn(
                     "relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200",
                     isActive
-                      ? "bg-primary text-black shadow-glow bg-lime-500"
-                      : " hover:text-foreground hover:bg-muted"
+                      ? "bg-lime-500 text-black shadow-glow"
+                      : "hover:bg-muted hover:text-foreground"
                   )}
                 >
-                  {/* Active indicator */}
                   {isActive && (
                     <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 rounded-full bg-lime-400" />
                   )}
@@ -98,7 +93,7 @@ export const Layout = ({ children }: LayoutProps) => {
         {/* User + Logout */}
         <div className="p-4 border-t border-border/50">
           <div className="flex items-center gap-3 px-4 py-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-cyan-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-full bg-linear-to-br from-cyan-500 to-cyan-600 flex items-center justify-center">
               <span className="text-sm font-bold text-foreground">
                 {user?.name?.charAt(0)?.toUpperCase()}
               </span>
@@ -113,11 +108,11 @@ export const Layout = ({ children }: LayoutProps) => {
 
           <Button
             variant="ghost"
-            className="w-full justify-start gap-3 mt-2 text-destructive hover:text-destructive hover:bg-destructive/10"
+            className="w-full justify-start gap-3 mt-2 text-destructive hover:bg-destructive/10"
             onClick={logout}
           >
             <LogOut className="w-5 h-5" />
-            Logout
+            <Link href="/">Logout</Link>
           </Button>
         </div>
       </aside>
@@ -125,10 +120,10 @@ export const Layout = ({ children }: LayoutProps) => {
       {/* ================= Mobile Header ================= */}
       <header className="lg:hidden fixed top-0 left-0 right-0 h-16 glass border-b border-border/50 z-50 flex items-center justify-between px-4">
         <Link href="/dashboard" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-lime-500 to-lime-600 flex items-center justify-center shadow-glow">
+          <div className="w-8 h-8 rounded-lg bg-linear-to-br from-lime-500 to-lime-600 flex items-center justify-center shadow-glow">
             <Flame className="w-5 h-5 text-primary-foreground" />
           </div>
-          <span className="text-lg font-bold text-gradient-primary">
+          <span className="text-lg font-bold text-linear-primary">
             FitForge
           </span>
         </Link>
@@ -138,11 +133,7 @@ export const Layout = ({ children }: LayoutProps) => {
           size="icon"
           onClick={() => setIsMobileMenuOpen((v) => !v)}
         >
-          {isMobileMenuOpen ? (
-            <X className="w-6 h-6" />
-          ) : (
-            <Menu className="w-6 h-6" />
-          )}
+          {isMobileMenuOpen ? <X /> : <Menu />}
         </Button>
       </header>
 
@@ -150,9 +141,9 @@ export const Layout = ({ children }: LayoutProps) => {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, x: "100%" }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: "100%" }}
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25 }}
             className="lg:hidden fixed inset-0 top-16 z-40 glass-card"
           >
@@ -168,14 +159,14 @@ export const Layout = ({ children }: LayoutProps) => {
                   >
                     <div
                       className={cn(
-                        "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200",
+                        "flex items-center gap-3 px-4 py-3 rounded-xl",
                         isActive
-                          ? "bg-primary text-primary-foreground shadow-glow"
-                          : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                          ? "bg-primary text-primary-foreground"
+                          : "hover:bg-muted"
                       )}
                     >
                       <item.icon className="w-5 h-5" />
-                      <span className="font-medium">{item.label}</span>
+                      <span>{item.label}</span>
                     </div>
                   </Link>
                 );
@@ -183,24 +174,21 @@ export const Layout = ({ children }: LayoutProps) => {
 
               <Button
                 variant="ghost"
-                className="w-full justify-start gap-3 mt-4 text-destructive hover:text-destructive hover:bg-destructive/10"
+                className="w-full justify-start gap-3 mt-4 text-destructive"
                 onClick={() => {
                   logout();
                   setIsMobileMenuOpen(false);
                 }}
               >
                 <LogOut className="w-5 h-5" />
-                Logout
+                <Link href="/">Logout</Link>
               </Button>
             </nav>
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* ================= Main Content ================= */}
-      <main className="flex-1 lg:ml-64 pt-16 lg:pt-0">
-        <div className="p-4 lg:p-8">{children}</div>
-      </main>
-    </div>
+    </>
   );
 };
+
+export default Sidebar;

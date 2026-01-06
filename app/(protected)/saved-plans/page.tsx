@@ -4,14 +4,14 @@ import { motion } from "framer-motion";
 import { BookOpen, Utensils, Dumbbell, Trash2, Star } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Layout } from "@/components/Layout";
+// import { Layout } from "@/components/Layout";
 import { usePlans } from "@/context/PlansContext";
 
 const SavedPlans = () => {
   const { mealPlans, workoutPlans, activeMealPlan, activeWorkoutPlan, deleteMealPlan, deleteWorkoutPlan, setActiveMealPlan, setActiveWorkoutPlan } = usePlans();
 
   return (
-    <Layout>
+    <>
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
         <div>
           <h1 className="text-3xl lg:text-4xl font-bold mb-2 flex items-center gap-3">
@@ -77,7 +77,7 @@ const SavedPlans = () => {
           </Card>
         </div>
       </motion.div>
-    </Layout>
+    </>
   );
 };
 

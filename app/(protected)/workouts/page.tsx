@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Layout } from "@/components/Layout";
+// import { Layout } from "@/components/Layout";
 import { usePlans, WorkoutPlan } from "@/context/PlansContext";
 import { toast } from "@/hooks/use-toast";
 
@@ -166,7 +166,7 @@ const Workouts = () => {
   const currentDayPlan = generatedPlan?.days.find((d) => d.day === activeDay);
 
   return (
-    <Layout>
+    <>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -443,7 +443,7 @@ const Workouts = () => {
           </Card>
         </div>
       </motion.div>
-    </Layout>
+    </>
   );
 };
 

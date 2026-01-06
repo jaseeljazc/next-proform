@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Layout } from "@/components/Layout";
+// import { Layout } from "@/components/Layout";
 import { usePlans, MealPlan } from "@/context/PlansContext";
 import { toast } from "@/hooks/use-toast";
 
@@ -148,7 +148,7 @@ const MealPlans = () => {
   };
 
   return (
-    <Layout>
+    // <Layout>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -402,7 +402,7 @@ const MealPlans = () => {
           </Card>
         </div>
       </motion.div>
-    </Layout>
+    // </Layout>
   );
 };
 
