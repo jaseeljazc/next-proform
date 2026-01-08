@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Flame, Mail, Lock, User, ArrowRight, Eye, EyeOff } from "lucide-react";
+import { Flame, Mail, Lock, User, ArrowRight, Eye, EyeOff, PersonStanding } from "lucide-react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Button } from "@/components/ui/button";
@@ -82,10 +82,10 @@ const AuthPage = () => {
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-3 mb-4">
             <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-lime-500 to-lime-600 flex items-center justify-center shadow-glow">
-              <Flame className="w-8 h-8 text-primary-foreground" />
+              <PersonStanding className="w-8 h-8 text-primary-foreground" />
             </div>
           </Link>
-          <h1 className="text-3xl font-bold text-gradient-primary">FitForge</h1>
+          <h1 className="text-3xl font-bold text-gradient-primary">ProFormAi</h1>
           <p className="text-muted-foreground mt-2">
             Your Indian Fitness & Nutrition Partner
           </p>

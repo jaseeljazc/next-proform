@@ -9,6 +9,7 @@ import {
   Dumbbell,
   TrendingUp,
   Sparkles,
+  PersonStanding,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -68,17 +69,17 @@ export default function HomePage() {
       <nav className="relative z-50 flex items-center justify-between p-6 max-w-7xl mx-auto">
         <Link href="/" className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-lime-500 to-lime-600 flex items-center justify-center shadow-glow">
-            <Flame className="w-6 h-6 text-primary-foreground" />
+            <PersonStanding className="w-6 h-6 text-primary-foreground" />
           </div>
           <span className="text-xl font-bold text-gradient-primary">
-            FitForge
+            ProFormAi{" "}
           </span>
         </Link>
 
         <div className="flex items-center gap-4">
-          <Link href="/auth">
+          {/* <Link href="/auth">
             <Button variant="ghost">Login</Button>
-          </Link>
+          </Link> */}
           <Link href="/auth">
             <Button variant="glow">
               Get Started
@@ -96,10 +97,7 @@ export default function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6">
-              <Sparkles className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium">Powered by AI</span>
-            </div>
+            
           </motion.div>
 
           <motion.h1
@@ -149,21 +147,18 @@ export default function HomePage() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-8 mt-16 lg:mt-24"
+className="flex flex-wrap justify-center items-center gap-4 lg:gap-8 mt-16 lg:mt-24"
         >
           {[
             { value: "100+", label: "Indian Recipes" },
             { value: "50+", label: "Workout Plans" },
-            { value: "10K+", label: "Active Users" },
-            { value: "4.9★", label: "User Rating" },
+           
           ].map((stat, index) => (
             <div key={index} className="text-center">
               <p className="text-3xl lg:text-4xl font-bold text-gradient-primary">
                 {stat.value}
               </p>
-              <p className="text-sm text-muted-foreground mt-1">
-                {stat.label}
-              </p>
+              <p className="text-sm text-muted-foreground mt-1">{stat.label}</p>
             </div>
           ))}
         </motion.div>

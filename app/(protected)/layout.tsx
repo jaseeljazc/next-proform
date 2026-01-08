@@ -13,7 +13,7 @@ const Layout = ({ children }: LayoutProps) => {
 
       {/* Main Content */}
       <main className="flex-1 lg:ml-64 pt-16 lg:pt-0">
-        <div className="p-4 lg:p-8">{children}</div>
+        <div className="p-4 lg:p-8 mb-20">{children}</div>
       </main>
     </div>
   );

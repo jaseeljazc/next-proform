@@ -10,6 +10,7 @@ import {
   LogOut,
   Flame,
   BotMessageSquare,
+  PersonStanding,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -51,7 +52,7 @@ const Sidebar = () => {
         <div className="p-6 border-b border-border/50">
           <Link href="/dashboard" className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-linear-to-br from-lime-500 to-lime-600 flex items-center justify-center shadow-glow">
-              <Flame className="w-6 h-6 text-primary-foreground" />
+              <PersonStanding className="w-6 h-6 text-primary-foreground" />
             </div>
             <span className="text-xl font-bold text-linear-primary">
               ProformAi
@@ -128,10 +129,10 @@ const Sidebar = () => {
       <header className="lg:hidden fixed top-0 left-0 right-0 h-16 glass border-b border-border/50 z-50 flex items-center justify-between px-4">
         <Link href="/dashboard" className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-linear-to-br from-lime-500 to-lime-600 flex items-center justify-center shadow-glow">
-            <Flame className="w-5 h-5 text-primary-foreground" />
+            <PersonStanding className="w-5 h-5 text-primary-foreground" />
           </div>
           <span className="text-lg font-bold text-linear-primary">
-            FitForge
+            ProFormAi
           </span>
         </Link>
 
