@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Dumbbell, Sparkles, Target, Plus } from "lucide-react";
+import { Dumbbell, Sparkles, Target, Plus, PlayCircle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -320,9 +320,22 @@ const Workouts = () => {
                                 {i + 1}
                               </div>
                               <div className="flex-1">
-                                <p className="font-semibold text-foreground">
-                                  {ex.name}
-                                </p>
+                                <div className="flex items-center gap-2">
+                                  <p className="font-semibold text-foreground">
+                                    {ex.name}
+                                  </p>
+                                  {ex.videoUrl && (
+                                    <a
+                                      href={ex.videoUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-muted-foreground hover:text-red-500 transition-colors"
+                                      title="Watch Tutorial"
+                                    >
+                                      <PlayCircle className="w-4 h-4" />
+                                    </a>
+                                  )}
+                                </div>
                                 <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
                                   <span className="bg-background/50 px-2 py-0.5 rounded">
                                     Sets: {ex.sets}

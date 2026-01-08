@@ -50,7 +50,8 @@ Structure the JSON exactly like this:
           "name": "Exercise Name",
           "sets": 3,
           "reps": "8-12",
-          "rest": "60s"
+          "rest": "60s",
+          "videoUrl": "https://www.youtube.com/results?search_query=Exercise+Name+tutorial"
         }
       ]
     }
@@ -62,6 +63,7 @@ Rules:
 - Be specific with exercise names.
 - Provide appropriate sets (usually 3-4) and reps (e.g., "8-12", "5x5", "Failure").
 - Include rest times.
+- Include a "videoUrl" for EACH exercise. Use the format: https://www.youtube.com/results?search_query={Exercise Name}+tutorial
 `;
 
     const response = await fetch(
