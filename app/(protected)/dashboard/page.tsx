@@ -52,7 +52,7 @@ const Dashboard = () => {
       {/* Header */}
       <motion.div variants={itemVariants}>
         <h1 className="text-3xl lg:text-4xl font-bold mb-2">
-          Welcome Back! 💪
+          Welcome Back!
         </h1>
         <p className="text-muted-foreground">
           Track your progress and stay on top of your fitness goals.
