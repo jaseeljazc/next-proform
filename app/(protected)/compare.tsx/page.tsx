@@ -111,3 +111,8 @@
 // };
 
 // export default Compare;
+// app/(protected)/compare.tsx/page.tsx
+
+export default function ComparePage() {
+  return null;
+}
