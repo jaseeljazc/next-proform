@@ -18,13 +18,23 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 
-const navItems = [
+const desktopNavItems = [
+  { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
+  { icon: Utensils, label: "Meals", path: "/meal-plans" },
+  { icon: Dumbbell, label: "Workouts", path: "/workouts" },
+  { icon: TrendingUp, label: "Progress", path: "/progress" },
+  { icon: BookOpen, label: "Saved", path: "/saved-plans" },
+  { icon: BotMessageSquare, label: "Chat Bot", path: "/chat-bot" },
+];
+
+const mobileNavItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
   { icon: Utensils, label: "Meals", path: "/meal-plans" },
   { icon: Dumbbell, label: "Workouts", path: "/workouts" },
   { icon: TrendingUp, label: "Progress", path: "/progress" },
   { icon: BookOpen, label: "Saved", path: "/saved-plans" },
 ];
+
 
 const Sidebar = () => {
   const pathname = usePathname();
@@ -44,18 +54,19 @@ const Sidebar = () => {
               <Flame className="w-6 h-6 text-primary-foreground" />
             </div>
             <span className="text-xl font-bold text-linear-primary">
-              FitForge
+              ProformAi
             </span>
           </Link>
         </div>
 
         {/* Navigation */}
         <nav className="flex-1 p-4 space-y-2">
-          {navItems.map((item) => {
+          {desktopNavItems.map((item) => {
             const isActive = isActiveRoute(item.path);
 
             return (
               <Link key={item.path} href={item.path}>
+                
                 <motion.div
                   whileHover={{ x: 4 }}
                   whileTap={{ scale: 0.97 }}
@@ -83,6 +94,7 @@ const Sidebar = () => {
               </Link>
             );
           })}
+          
         </nav>
 
         {/* User + Logout */}
@@ -135,7 +147,7 @@ const Sidebar = () => {
 
       {/* ================= MOBILE BOTTOM NAV ================= */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 h-16 glass border-t border-border/50 z-40 flex items-center justify-around">
-        {navItems.map((item) => {
+        {mobileNavItems.map((item) => {
           const isActive = isActiveRoute(item.path);
 
           return (
