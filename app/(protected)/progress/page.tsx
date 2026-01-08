@@ -9,6 +9,7 @@ import {
   Save,
   Trash2,
 } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -38,6 +39,7 @@ const workoutDays = [
 
 const Progress = () => {
   const { workoutLogs, addWorkoutLog } = usePlans();
+  const [expanded, setExpanded] = useState<string[]>([]);
 
   const [selectedDay, setSelectedDay] = useState("Chest");
   const [exercises, setExercises] = useState([
@@ -84,7 +86,7 @@ const Progress = () => {
     return Math.ceil(diff / 604800000);
   };
 
-  const saveWorkout = () => {
+  const saveWorkout = async () => {
     const validExercises = exercises.filter(
       (e) => e.name && e.sets.some((s) => s.reps > 0)
     );
@@ -106,12 +108,20 @@ const Progress = () => {
       exercises: validExercises,
     };
 
-    addWorkoutLog(log);
+    try {
+      await addWorkoutLog(log);
 
-    toast({
-      title: "Workout Saved!",
-      description: `Your ${selectedDay} workout has been logged.`,
-    });
+      toast({
+        title: "Workout Saved!",
+        description: `Your ${selectedDay} workout has been logged.`,
+      });
+    } catch (e) {
+      toast({
+        title: "Save Failed",
+        description: "Could not save workout.",
+        variant: "destructive",
+      });
+    }
 
     setExercises([{ name: "", sets: [{ reps: 0, weight: 0 }] }]);
   };
@@ -261,16 +271,58 @@ const Progress = () => {
               Object.entries(groupedLogs).map(([week, logs]) => (
                 <div key={week} className="mb-6">
                   <h4 className="font-bold mb-3">{week}</h4>
-                  {logs.map((log) => (
-                    <div key={log.id} className="glass rounded-lg p-4 mb-2">
-                      <div className="flex justify-between">
-                        <span className="font-semibold">{log.dayName}</span>
-                        <span className="text-sm text-muted-foreground">
-                          {new Date(log.date).toLocaleDateString()}
-                        </span>
+                  {logs.map((log) => {
+                    const isOpen = expanded.includes(log.id);
+                    return (
+                      <div key={log.id} className="glass rounded-lg p-4 mb-2">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <span className="font-semibold">{log.dayName}</span>
+                            <div className="text-sm text-muted-foreground">
+                              {new Date(log.date).toLocaleDateString()}
+                            </div>
+                          </div>
+
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() =>
+                              setExpanded((prev) =>
+                                prev.includes(log.id)
+                                  ? prev.filter((id) => id !== log.id)
+                                  : [log.id, ...prev]
+                              )
+                            }
+                          >
+                            {isOpen ? (
+                              <ChevronUp className="w-5 h-5" />
+                            ) : (
+                              <ChevronDown className="w-5 h-5" />
+                            )}
+                          </Button>
+                        </div>
+
+                        {isOpen && (
+                          <div className="mt-3">
+                            {log.exercises.map((ex, i) => (
+                              <div key={i} className="mb-2">
+                                <div className="font-medium">{ex.name}</div>
+                                <div className="text-sm text-muted-foreground">
+                                  {ex.sets.map((s, si) => (
+                                    <div key={si} className="flex gap-4">
+                                      <span>Set {si + 1}:</span>
+                                      <span>{s.reps} reps</span>
+                                      <span>{s.weight} kg</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ))
             ) : (

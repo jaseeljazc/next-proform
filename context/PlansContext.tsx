@@ -58,7 +58,7 @@ interface PlansContextType {
   deleteWorkoutPlan: (id: string) => Promise<void>;
   setActiveMealPlan: (id: string, isActive: boolean) => Promise<void>;
   setActiveWorkoutPlan: (id: string, isActive: boolean) => Promise<void>;
-  addWorkoutLog: (log: WorkoutLog) => void;
+  addWorkoutLog: (log: WorkoutLog) => Promise<void>;
   isLoading: boolean;
 }
 
@@ -85,6 +85,7 @@ export const PlansProvider = ({ children }: { children: React.ReactNode }) => {
     } else {
       setMealPlans([]);
       setWorkoutPlans([]);
+      setWorkoutLogs([]);
     }
   }, [user]);
 
@@ -103,6 +104,16 @@ export const PlansProvider = ({ children }: { children: React.ReactNode }) => {
       if (workoutsRes.ok) {
         const workouts = await workoutsRes.json();
         setWorkoutPlans(workouts);
+      }
+      // fetch workout logs
+      try {
+        const logsRes = await fetch("/api/workouts/log");
+        if (logsRes.ok) {
+          const logs = await logsRes.json();
+          setWorkoutLogs(logs);
+        }
+      } catch (e) {
+        console.error("Failed to fetch workout logs", e);
       }
     } catch (error) {
       console.error("Failed to fetch plans", error);
@@ -211,8 +222,23 @@ export const PlansProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const addWorkoutLog = (log: WorkoutLog) => {
-    setWorkoutLogs((prev) => [...prev, log]);
+  const addWorkoutLog = async (log: WorkoutLog) => {
+    try {
+      const res = await fetch("/api/workouts/log", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(log),
+      });
+
+      if (res.ok) {
+        const saved = await res.json();
+        setWorkoutLogs((prev) => [saved, ...prev]);
+      } else {
+        console.error("Failed to save workout log", await res.text());
+      }
+    } catch (error) {
+      console.error("Failed to save workout log", error);
+    }
   };
 
   const activeMealPlan = mealPlans.find((p) => p.isActive) || null;
