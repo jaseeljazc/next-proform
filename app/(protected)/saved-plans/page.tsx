@@ -30,9 +30,14 @@ const SavedPlans = () => {
   const [expandedWorkoutId, setExpandedWorkoutId] = useState<string | null>(
     null
   );
+  const [expandedMealId, setExpandedMealId] = useState<string | null>(null);
 
   const toggleWorkout = (id: string) => {
     setExpandedWorkoutId(expandedWorkoutId === id ? null : id);
+  };
+
+  const toggleMeal = (id: string) => {
+    setExpandedMealId(expandedMealId === id ? null : id);
   };
 
   return (
@@ -52,7 +57,7 @@ const SavedPlans = () => {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className="grid lg:grid-cols-2 gap-8 items-start">
           <Card variant="glow">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -66,30 +71,99 @@ const SavedPlans = () => {
                   {mealPlans.map((plan) => (
                     <div
                       key={plan.id}
-                      className="glass rounded-xl p-4 flex justify-between items-center"
+                      className="glass rounded-xl overflow-hidden"
                     >
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold">{plan.name}</span>
-                          {activeMealPlan?.id === plan.id && (
-                            <Star className="w-4 h-4 text-primary fill-primary" />
-                          )}
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          {plan.calories} kcal • {plan.dietType}
-                        </p>
-                      </div>
-                      <div className="flex gap-2">
-                       
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="text-destructive"
-                          onClick={() => deleteMealPlan(plan.id)}
+                      <div className="p-4 flex justify-between items-center">
+                        <div
+                          className="flex-1 cursor-pointer"
+                          onClick={() => toggleMeal(plan.id)}
                         >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold">{plan.name}</span>
+                            {activeMealPlan?.id === plan.id && (
+                              <Star className="w-4 h-4 text-primary fill-primary" />
+                            )}
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            {plan.calories} kcal • {plan.dietType}
+                          </p>
+                        </div>
+                        <div className="flex gap-2 items-center">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => toggleMeal(plan.id)}
+                          >
+                            {expandedMealId === plan.id ? (
+                              <ChevronUp className="w-4 h-4" />
+                            ) : (
+                              <ChevronDown className="w-4 h-4" />
+                            )}
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setActiveMealPlan(plan.id)}
+                          >
+                            Activate
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-destructive"
+                            onClick={() => deleteMealPlan(plan.id)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
                       </div>
+
+                      <AnimatePresence>
+                        {expandedMealId === plan.id && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="bg-black/20 border-t border-white/5"
+                          >
+                            <div className="p-4 space-y-4">
+                              {plan.meals?.map((meal: any, idx: number) => (
+                                <div key={idx} className="space-y-2">
+                                  <h4 className="text-sm font-semibold text-primary flex items-center gap-2 justify-between">
+                                    <span className="flex items-center gap-2">
+                                      <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                                      {meal.name}
+                                    </span>
+                                    <span className="text-xs text-muted-foreground font-normal">
+                                      {meal.time}
+                                    </span>
+                                  </h4>
+                                  <div className="grid gap-2 pl-4">
+                                    {meal.foods.map((food: any, i: number) => (
+                                      <div
+                                        key={i}
+                                        className="text-sm text-muted-foreground flex flex-col border-b border-white/5 pb-2 last:border-0"
+                                      >
+                                        <div className="flex justify-between">
+                                          <span>{food.name}</span>
+                                          <span className="text-xs">
+                                            {food.calories} kcal
+                                          </span>
+                                        </div>
+                                        <div className="flex gap-3 text-xs opacity-70 mt-1">
+                                          <span>P: {food.protein}g</span>
+                                          <span>C: {food.carbs}g</span>
+                                          <span>F: {food.fats}g</span>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
                   ))}
                 </div>
