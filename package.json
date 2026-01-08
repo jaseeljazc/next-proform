@@ -39,16 +39,22 @@
     "@radix-ui/react-toggle-group": "^1.1.11",
     "@radix-ui/react-tooltip": "^1.2.8",
     "@tanstack/react-query": "^5.90.16",
+    "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.1",
+    "cookie": "^1.1.1",
+    "formik": "^2.4.9",
     "framer-motion": "^12.24.0",
+    "jsonwebtoken": "^9.0.3",
     "lucide-react": "^0.562.0",
+    "mongoose": "^9.1.2",
     "next": "16.1.1",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-markdown": "^10.1.0",
     "recharts": "^3.6.0",
     "tailwind-merge": "^3.4.0",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "yup": "^1.7.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
