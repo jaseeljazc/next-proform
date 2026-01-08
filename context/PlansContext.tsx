@@ -56,8 +56,8 @@ interface PlansContextType {
   addWorkoutPlan: (plan: WorkoutPlan) => Promise<void>;
   deleteMealPlan: (id: string) => Promise<void>;
   deleteWorkoutPlan: (id: string) => Promise<void>;
-  setActiveMealPlan: (id: string) => Promise<void>;
-  setActiveWorkoutPlan: (id: string) => Promise<void>;
+  setActiveMealPlan: (id: string, isActive: boolean) => Promise<void>;
+  setActiveWorkoutPlan: (id: string, isActive: boolean) => Promise<void>;
   addWorkoutLog: (log: WorkoutLog) => void;
   isLoading: boolean;
 }
@@ -161,19 +161,25 @@ export const PlansProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const setActiveMealPlan = async (id: string) => {
+  const setActiveMealPlan = async (id: string, isActive: boolean) => {
     try {
       const res = await fetch(`/api/plans/meal/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ isActive: true }),
+        body: JSON.stringify({ isActive }),
       });
 
       if (res.ok) {
-        // Update local state to reflect change (optimistic or re-fetch?)
-        // Simple approach: update all local to false except target
         setMealPlans((prev) =>
-          prev.map((p) => ({ ...p, isActive: p.id === id }))
+          prev.map((p) => {
+            if (isActive) {
+              // If activating, deactivate others
+              return { ...p, isActive: p.id === id };
+            } else {
+              // If deactivating, just deactivate target
+              return p.id === id ? { ...p, isActive: false } : p;
+            }
+          })
         );
       }
     } catch (error) {
@@ -181,17 +187,23 @@ export const PlansProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const setActiveWorkoutPlan = async (id: string) => {
+  const setActiveWorkoutPlan = async (id: string, isActive: boolean) => {
     try {
       const res = await fetch(`/api/plans/workout/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ isActive: true }),
+        body: JSON.stringify({ isActive }),
       });
 
       if (res.ok) {
         setWorkoutPlans((prev) =>
-          prev.map((p) => ({ ...p, isActive: p.id === id }))
+          prev.map((p) => {
+            if (isActive) {
+              return { ...p, isActive: p.id === id };
+            } else {
+              return p.id === id ? { ...p, isActive: false } : p;
+            }
+          })
         );
       }
     } catch (error) {

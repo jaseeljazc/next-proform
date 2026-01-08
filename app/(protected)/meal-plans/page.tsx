@@ -108,7 +108,7 @@ const MealPlans = () => {
   const savePlan = () => {
     if (generatedPlan) {
       addMealPlan(generatedPlan);
-      setActiveMealPlan(generatedPlan.id);
+      setActiveMealPlan(generatedPlan.id, true);
       toast({
         title: "Meal Plan Saved!",
         description: "Your meal plan has been saved and activated.",

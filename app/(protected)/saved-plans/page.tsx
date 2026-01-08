@@ -15,6 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 // import { Layout } from "@/components/Layout";
 import { usePlans } from "@/context/PlansContext";
+import { toast } from "@/hooks/use-toast";
 
 const SavedPlans = () => {
   const {
@@ -103,9 +104,27 @@ const SavedPlans = () => {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => setActiveMealPlan(plan.id)}
+                            onClick={() => {
+                              setActiveMealPlan(
+                                plan.id,
+                                activeMealPlan?.id !== plan.id
+                              );
+                              toast({
+                                title:
+                                  activeMealPlan?.id !== plan.id
+                                    ? "Plan Activated"
+                                    : "Plan Deactivated",
+                                description: `You have successfully ${
+                                  activeMealPlan?.id !== plan.id
+                                    ? "activated"
+                                    : "deactivated"
+                                } the ${plan.name} plan.`,
+                              });
+                            }}
                           >
-                            Activate
+                            {activeMealPlan?.id === plan.id
+                              ? "Deactivate"
+                              : "Activate"}
                           </Button>
                           <Button
                             variant="ghost"
@@ -221,9 +240,27 @@ const SavedPlans = () => {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => setActiveWorkoutPlan(plan.id)}
+                            onClick={() => {
+                              setActiveWorkoutPlan(
+                                plan.id,
+                                activeWorkoutPlan?.id !== plan.id
+                              );
+                              toast({
+                                title:
+                                  activeWorkoutPlan?.id !== plan.id
+                                    ? "Plan Activated"
+                                    : "Plan Deactivated",
+                                description: `You have successfully ${
+                                  activeWorkoutPlan?.id !== plan.id
+                                    ? "activated"
+                                    : "deactivated"
+                                } the ${plan.name} plan.`,
+                              });
+                            }}
                           >
-                            Activate
+                            {activeWorkoutPlan?.id === plan.id
+                              ? "Deactivate"
+                              : "Activate"}
                           </Button>
                           <Button
                             variant="ghost"

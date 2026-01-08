@@ -90,7 +90,7 @@ const Workouts = () => {
     };
 
     addWorkoutPlan(plan as any);
-    setActiveWorkoutPlan(plan.id);
+    setActiveWorkoutPlan(plan.id, true);
 
     toast({
       title: "Workout Plan Saved!",
