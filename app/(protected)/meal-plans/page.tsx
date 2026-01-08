@@ -26,31 +26,6 @@ import {
 import { usePlans, MealPlan } from "@/context/PlansContext";
 import { toast } from "@/hooks/use-toast";
 
-const sampleMeals = {
-  veg: [
-    { name: "Poha with Vegetables", calories: 250, protein: 6, carbs: 45, fats: 5 },
-    { name: "Idli Sambar", calories: 200, protein: 5, carbs: 40, fats: 2 },
-    { name: "Paratha with Curd", calories: 350, protein: 10, carbs: 45, fats: 12 },
-    { name: "Dal Chawal", calories: 400, protein: 15, carbs: 60, fats: 8 },
-    { name: "Paneer Tikka", calories: 300, protein: 20, carbs: 10, fats: 20 },
-    { name: "Rajma Chawal", calories: 450, protein: 18, carbs: 65, fats: 10 },
-    { name: "Chole Bhature", calories: 550, protein: 15, carbs: 70, fats: 20 },
-    { name: "Masala Dosa", calories: 380, protein: 8, carbs: 55, fats: 14 },
-  ],
-  egg: [
-    { name: "Egg Bhurji with Roti", calories: 400, protein: 22, carbs: 35, fats: 18 },
-    { name: "Boiled Eggs with Toast", calories: 280, protein: 18, carbs: 25, fats: 12 },
-    { name: "Egg Curry with Rice", calories: 450, protein: 20, carbs: 55, fats: 15 },
-    { name: "Omelette with Paratha", calories: 420, protein: 18, carbs: 40, fats: 20 },
-  ],
-  nonveg: [
-    { name: "Chicken Curry with Rice", calories: 550, protein: 35, carbs: 55, fats: 18 },
-    { name: "Tandoori Chicken", calories: 350, protein: 40, carbs: 5, fats: 15 },
-    { name: "Fish Fry with Roti", calories: 400, protein: 30, carbs: 30, fats: 18 },
-    { name: "Mutton Biryani", calories: 650, protein: 30, carbs: 70, fats: 25 },
-    { name: "Chicken Tikka", calories: 280, protein: 35, carbs: 5, fats: 12 },
-  ],
-};
 
 const MealPlans = () => {
   const { addMealPlan, setActiveMealPlan } = usePlans();
@@ -92,48 +67,45 @@ const MealPlans = () => {
 
     return Math.round(tdee);
   };
+const generateMealPlan = async () => {
+  setIsGenerating(true);
 
-  const generateMealPlan = () => {
-    setIsGenerating(true);
+  try {
+    const res = await fetch("/api/meal-plan", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
 
-    setTimeout(() => {
-      const calories = calculateCalories();
-      const mealsCount = parseInt(formData.mealsPerDay);
-      const caloriesPerMeal = Math.round(calories / mealsCount);
+    const data = await res.json();
 
-      const availableMeals = [
-        ...sampleMeals.veg,
-        ...(formData.dietType !== "veg" ? sampleMeals.egg : []),
-        ...(formData.dietType === "nonveg" ? sampleMeals.nonveg : []),
-      ];
+    if (!res.ok) throw new Error(data.error);
 
-      const mealTimes = ["Breakfast", "Lunch", "Snack", "Dinner", "Post Dinner"];
-      const times = ["8:00 AM", "12:30 PM", "4:00 PM", "7:30 PM", "9:00 PM"];
+    const newPlan: MealPlan = {
+      id: Date.now().toString(),
+      name: `${formData.goal.replace("-", " ")} Plan`,
+      createdAt: new Date().toISOString(),
+      goal: formData.goal,
+      dietType: formData.dietType,
+      calories: data.calories,
+      meals: data.meals,
+    };
 
-      const meals = Array.from({ length: mealsCount }, (_, i) => {
-        const randomMeal =
-          availableMeals[Math.floor(Math.random() * availableMeals.length)];
-        return {
-          name: mealTimes[i] || `Meal ${i + 1}`,
-          time: times[i] || "12:00 PM",
-          foods: [{ ...randomMeal }],
-        };
-      });
+    setGeneratedPlan(newPlan);
+  } catch (error) {
+    toast({
+      title: "Error",
+      description: "Failed to generate meal plan",
+      variant: "destructive",
+    });
+  } finally {
+    setIsGenerating(false);
+  }
+};
 
-      const newPlan: MealPlan = {
-        id: Date.now().toString(),
-        name: `${formData.goal.replace("-", " ")} Plan`,
-        createdAt: new Date().toISOString(),
-        goal: formData.goal,
-        dietType: formData.dietType,
-        calories,
-        meals,
-      };
 
-      setGeneratedPlan(newPlan);
-      setIsGenerating(false);
-    }, 2000);
-  };
 
   const savePlan = () => {
     if (generatedPlan) {
@@ -376,7 +348,7 @@ const MealPlans = () => {
                             key={fIdx}
                             className="flex justify-between items-center text-sm"
                           >
-                            <span>{food.name}</span>
+                            <span className="text-foreground">{food.name}</span>
                             <div className="flex gap-3 text-muted-foreground">
                               <span>{food.calories} kcal</span>
                               <span>P: {food.protein}g</span>
