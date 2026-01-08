@@ -60,5 +60,8 @@ export const getUserFromRequest = (req: NextRequest) => {
 
   if (!token) return null;
 
-  return verifyToken(token);
+  const decoded = verifyToken(token);
+  return typeof decoded === "object" && decoded !== null
+    ? (decoded as any)
+    : null;
 };

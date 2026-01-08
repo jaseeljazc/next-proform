@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, createContext, useContext } from "react";
-
+import { useState, createContext, useContext, useEffect } from "react";
+import { useAuth } from "./AuthContext";
 
 export interface MealPlan {
   id: string;
@@ -10,10 +10,17 @@ export interface MealPlan {
   goal: string;
   dietType: string;
   calories: number;
+  isActive: boolean;
   meals: {
     name: string;
     time: string;
-    foods: { name: string; calories: number; protein: number; carbs: number; fats: number }[];
+    foods: {
+      name: string;
+      calories: number;
+      protein: number;
+      carbs: number;
+      fats: number;
+    }[];
   }[];
 }
 
@@ -45,13 +52,14 @@ interface PlansContextType {
   workoutLogs: WorkoutLog[];
   activeMealPlan: MealPlan | null;
   activeWorkoutPlan: WorkoutPlan | null;
-  addMealPlan: (plan: MealPlan) => void;
-  addWorkoutPlan: (plan: WorkoutPlan) => void;
-  deleteMealPlan: (id: string) => void;
-  deleteWorkoutPlan: (id: string) => void;
-  setActiveMealPlan: (id: string) => void;
-  setActiveWorkoutPlan: (id: string) => void;
+  addMealPlan: (plan: MealPlan) => Promise<void>;
+  addWorkoutPlan: (plan: WorkoutPlan) => Promise<void>;
+  deleteMealPlan: (id: string) => Promise<void>;
+  deleteWorkoutPlan: (id: string) => Promise<void>;
+  setActiveMealPlan: (id: string) => Promise<void>;
+  setActiveWorkoutPlan: (id: string) => Promise<void>;
   addWorkoutLog: (log: WorkoutLog) => void;
+  isLoading: boolean;
 }
 
 const PlansContext = createContext<PlansContextType | null>(null);
@@ -65,47 +73,138 @@ export const usePlans = () => {
 };
 
 export const PlansProvider = ({ children }: { children: React.ReactNode }) => {
+  const { user } = useAuth();
   const [mealPlans, setMealPlans] = useState<MealPlan[]>([]);
   const [workoutPlans, setWorkoutPlans] = useState<WorkoutPlan[]>([]);
   const [workoutLogs, setWorkoutLogs] = useState<WorkoutLog[]>([]);
-  const [activeMealPlanId, setActiveMealPlanId] = useState<string | null>(null);
-  const [activeWorkoutPlanId, setActiveWorkoutPlanId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const addMealPlan = (plan: MealPlan) => {
-    setMealPlans((prev) => [...prev, plan]);
+  useEffect(() => {
+    if (user) {
+      fetchPlans();
+    } else {
+      setMealPlans([]);
+      setWorkoutPlans([]);
+    }
+  }, [user]);
+
+  const fetchPlans = async () => {
+    setIsLoading(true);
+    try {
+      const [mealsRes, workoutsRes] = await Promise.all([
+        fetch("/api/plans/meal"),
+        fetch("/api/plans/workout"),
+      ]);
+
+      if (mealsRes.ok) {
+        const meals = await mealsRes.json();
+        setMealPlans(meals);
+      }
+      if (workoutsRes.ok) {
+        const workouts = await workoutsRes.json();
+        setWorkoutPlans(workouts);
+      }
+    } catch (error) {
+      console.error("Failed to fetch plans", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const addWorkoutPlan = (plan: WorkoutPlan) => {
-    setWorkoutPlans((prev) => [...prev, plan]);
+  const addMealPlan = async (plan: MealPlan) => {
+    try {
+      const res = await fetch("/api/plans/meal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(plan),
+      });
+      if (res.ok) {
+        const newPlan = await res.json();
+        setMealPlans((prev) => [newPlan, ...prev]);
+      }
+    } catch (error) {
+      console.error("Failed to add meal plan", error);
+    }
   };
 
-  const deleteMealPlan = (id: string) => {
-    setMealPlans((prev) => prev.filter((p) => p.id !== id));
-    if (activeMealPlanId === id) setActiveMealPlanId(null);
+  const addWorkoutPlan = async (plan: WorkoutPlan) => {
+    try {
+      const res = await fetch("/api/plans/workout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(plan),
+      });
+      if (res.ok) {
+        const newPlan = await res.json();
+        setWorkoutPlans((prev) => [newPlan, ...prev]);
+      }
+    } catch (error) {
+      console.error("Failed to add workout plan", error);
+    }
   };
 
-  const deleteWorkoutPlan = (id: string) => {
-    setWorkoutPlans((prev) => prev.filter((p) => p.id !== id));
-    if (activeWorkoutPlanId === id) setActiveWorkoutPlanId(null);
+  const deleteMealPlan = async (id: string) => {
+    try {
+      await fetch(`/api/plans/meal/${id}`, { method: "DELETE" });
+      setMealPlans((prev) => prev.filter((p) => p.id !== id));
+    } catch (error) {
+      console.error("Failed to delete meal plan", error);
+    }
   };
 
-  const setActiveMealPlan = (id: string) => {
-    setActiveMealPlanId(id);
+  const deleteWorkoutPlan = async (id: string) => {
+    try {
+      await fetch(`/api/plans/workout/${id}`, { method: "DELETE" });
+      setWorkoutPlans((prev) => prev.filter((p) => p.id !== id));
+    } catch (error) {
+      console.error("Failed to delete workout plan", error);
+    }
   };
 
-  const setActiveWorkoutPlan = (id: string) => {
-    setActiveWorkoutPlanId(id);
-    setWorkoutPlans((prev) =>
-      prev.map((p) => ({ ...p, isActive: p.id === id }))
-    );
+  const setActiveMealPlan = async (id: string) => {
+    try {
+      const res = await fetch(`/api/plans/meal/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isActive: true }),
+      });
+
+      if (res.ok) {
+        // Update local state to reflect change (optimistic or re-fetch?)
+        // Simple approach: update all local to false except target
+        setMealPlans((prev) =>
+          prev.map((p) => ({ ...p, isActive: p.id === id }))
+        );
+      }
+    } catch (error) {
+      console.error("Failed to set active meal plan", error);
+    }
+  };
+
+  const setActiveWorkoutPlan = async (id: string) => {
+    try {
+      const res = await fetch(`/api/plans/workout/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isActive: true }),
+      });
+
+      if (res.ok) {
+        setWorkoutPlans((prev) =>
+          prev.map((p) => ({ ...p, isActive: p.id === id }))
+        );
+      }
+    } catch (error) {
+      console.error("Failed to set active workout plan", error);
+    }
   };
 
   const addWorkoutLog = (log: WorkoutLog) => {
     setWorkoutLogs((prev) => [...prev, log]);
   };
 
-  const activeMealPlan = mealPlans.find((p) => p.id === activeMealPlanId) || null;
-  const activeWorkoutPlan = workoutPlans.find((p) => p.id === activeWorkoutPlanId) || null;
+  const activeMealPlan = mealPlans.find((p) => p.isActive) || null;
+  const activeWorkoutPlan = workoutPlans.find((p) => p.isActive) || null;
 
   return (
     <PlansContext.Provider
@@ -122,6 +221,7 @@ export const PlansProvider = ({ children }: { children: React.ReactNode }) => {
         setActiveMealPlan,
         setActiveWorkoutPlan,
         addWorkoutLog,
+        isLoading,
       }}
     >
       {children}
